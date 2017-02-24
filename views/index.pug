@@ -1,0 +1,25 @@
+doctype html
+head
+  title Create User
+
+  link(rel="stylesheet" href="css/main.css")
+body
+  header
+    .logo: img(src="http://pulkomandy.tk/logos/apple.svg")
+    nav
+      ul
+        each link in links
+          li: a(href=link.path) #{link.title}
+
+  section
+    each post in posts
+      article
+        header
+          h3 #{post.title}
+          div !{post.content}
+          p: a(href="post/" + post.id) Read More
+          br
+  footer
+    div 2017 © It's copyright
+
+  //- script(src="js/main.js")

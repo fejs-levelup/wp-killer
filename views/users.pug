@@ -1,0 +1,25 @@
+doctype html
+title Users
+
+body
+  nav
+    ul
+      each link in links
+        li: a(href=link.path) #{link.title}
+
+  each user in users
+    div.user(
+      style="margin: 10px; padding: 10px; border: 1px solid #ddd"
+      data-name=user.name
+    )
+      | User: #{user.name}
+      br
+      | Age: #{user.age}
+      br
+      | Gender: #{user.gender}
+      br
+      | Role: #{user.role}
+      br
+      button(data-user=user.name) Remove
+
+  script(src="js/users.js")

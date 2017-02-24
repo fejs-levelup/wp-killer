@@ -1,0 +1,10 @@
+doctype html
+head
+  title #{post.title}
+
+body
+  nav
+    p: a(href="/") Home sweet home
+  section
+    h1 #{post.title}
+    div !{post.content}

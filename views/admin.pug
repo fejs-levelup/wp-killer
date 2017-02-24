@@ -1,0 +1,26 @@
+doctype html
+head
+  title Admin
+  link(rel="stylesheet" href="css/admin.css")
+  link(rel="stylesheet" href="//cdn.quilljs.com/1.2.0/quill.snow.css")
+  //- link(rel="stylesheet" href="//cdn.quilljs.com/1.2.0/quill.bubble.css")
+
+body
+  div
+    aside
+      nav
+        each link in links
+          p: a(href=link.href) #{link.text}
+
+    section
+      h1 Welcome to admin panel
+      h3 Create new post!!!
+      //- a(href="admin/new-post"): button Create a new post
+
+      input#post-title(type="text" name="post-title" placeholder="Post title")
+      div#post-editor
+      button#save-post Save post
+
+  //- script(src="//cdn.quilljs.com/1.2.0/quill.js")
+  script(src="//cdn.quilljs.com/1.2.0/quill.min.js")
+  script(src="js/admin.js")

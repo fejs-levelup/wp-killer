@@ -1,0 +1,16 @@
+doctype html
+head
+  title Login page
+
+  link(rel="stylesheet" href="css/login.css")
+
+body
+  form#login(
+    action="/login"
+    method="POST"
+  )
+    label(for="login-name") Login name:
+    input#login-name(type="text" required name="login-name")
+    label(for="password") Password:
+    input#password(type="password" required name="password")
+    button Login
