@@ -7,7 +7,11 @@ const mongoose = require("mongoose"),
     multer = require("multer"),
     storage = multer.diskStorage({
       destination(req, file, cb) {
-        cb(null, uploadPath);
+        let url = req.path === "/upload-thumb" ?
+          `${uploadPath}/thumbs` :
+          uploadPath;
+
+        cb(null, url);
       },
       filename(req, file, cb) {
         cb(null, file.originalname);
@@ -58,6 +62,10 @@ let PostSchema = new Schema({
     required: true
   },
   title: {
+    type: String,
+    required: true
+  },
+  thumb: {
     type: String,
     required: true
   }
@@ -195,7 +203,19 @@ app.post("/upload-image", upload.single("post-image"), (request, response) => {
   response.send({
     error: null,
     data: `/upload/${request.file.originalname}`
-  })
+  });
+});
+
+app.post("/upload-thumb", upload.single("post-thumbnail"), (request, response) => {
+  if(!request.file) {
+    response.status(400).send({ error: "Empty file", data: null });
+    return;
+  }
+
+  response.send({
+    error: null,
+    data: `/upload/thumbs/${request.file.originalname}`
+  });
 });
 
 app.listen("8888", () => {

@@ -4,12 +4,22 @@ head
 
   link(rel="stylesheet" href="css/main.css")
 body
-  header
-    .logo: img(src="http://pulkomandy.tk/logos/apple.svg")
+  - var recentPost = posts[posts.length - 1];
+
+  .nav-container
+    .logo: img(src="img/iso_logo_new.png")
     nav
       ul
         each link in links
           li: a(href=link.path) #{link.title}
+
+  header#main-header(
+    style=`background: url(${recentPost.thumb}) center center / cover no-repeat #eee;`
+  )
+
+    .recent-post-container
+      h2 #{recentPost.title}
+
 
   section
     each post in posts
@@ -17,7 +27,7 @@ body
         header
           h3 #{post.title}
           div !{post.content}
-          p: a(href="post/" + post.id) Read More
+          p#firstParagraph: a(href="post/" + post.id) Read More
           br
   footer
     div 2017 © It's copyright

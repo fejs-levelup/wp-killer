@@ -19,6 +19,13 @@ body
 
       input#post-title(type="text" name="post-title" placeholder="Post title")
       div#post-editor
+      div.upload-preview
+        form#post-preview(action="/upload-thumb")
+          label(for="post-thumbnail") Upload image
+          input#post-thumbnail(
+            type="file"
+            name="post-thumbnail"
+          )
       button#save-post Save post
 
   //- script(src="//cdn.quilljs.com/1.2.0/quill.js")

@@ -27,13 +27,12 @@
 
     form.appendChild(input);
 
+    input.addEventListener("change", onFileSelect);
+
     let ev = new MouseEvent("click");
     input.dispatchEvent(ev);
 
-    input.addEventListener("change", onFileSelect);
-
     function onFileSelect(ev) {
-      console.dir(ev.target);
       let input = ev.target;
 
       uploadFile(form);
@@ -66,6 +65,24 @@
     });
   }
 
+  const uploadImage = (ev) => {
+    const form = document.querySelector("#post-preview"),
+          input = form.querySelector("#post-thumbnail");
+
+    if(input.files.length < 1) throw new Error("Upload PREVIEW!!!");
+    const formData = new FormData(form);
+
+
+    const settings = {
+      method: "POST",
+      body: formData
+    }
+
+    return fetch("upload-thumb", settings).
+      then((res) => res.json()).
+      catch(e => console.error(e));
+  };
+
   const saveButton = document.querySelector("#save-post");
   const savePost = () => {
     let content = document.querySelector("#post-editor .ql-editor").innerHTML;
@@ -75,25 +92,42 @@
 
     console.log(content);
 
-    fetch("post", {
-      method: "POST",
-      body: JSON.stringify({ content, title }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).
-    then(res => res.json()).
-    then(res => {
-      console.log(res);
-      // let url = res.data,
-      //   l = quill.getLength();
+    uploadImage().
+      then(({ data }) => fetch("post", {
+        method: "POST",
+        body: JSON.stringify({ content, title, thumb: data }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })).
+      then(res => res.json()).
+      then(res => {
+        console.log(res);
+        // let url = res.data,
+        //   l = quill.getLength();
 
-      // quill.insertEmbed(l, "image", url);
-    }).
-    catch(e => {
-      console.error(e);
-    });
+        // quill.insertEmbed(l, "image", url);
+      }).
+      catch(e => {
+        console.error(e);
+      });
   };
 
   saveButton.addEventListener("click", savePost);
 })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
