@@ -2,7 +2,18 @@ const mongoose = require("mongoose"),
     url = "mongodb://localhost:27017/levelup",
     express = require("express"),
     app = express(),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    uploadPath = "./public/upload",
+    multer = require("multer"),
+    storage = multer.diskStorage({
+      destination(req, file, cb) {
+        cb(null, uploadPath);
+      },
+      filename(req, file, cb) {
+        cb(null, file.originalname);
+      }
+    }),
+    upload = multer({ storage });
 
 app.set('views', './views');
 app.set("view engine", "pug");
@@ -173,6 +184,18 @@ app.get("/users", (request, response) => {
 
     response.render("users", { users: data, links });
   });
+});
+
+app.post("/upload-image", upload.single("post-image"), (request, response) => {
+  if(!request.file) {
+    response.status(400).send({ error: "Empty file", data: null });
+    return;
+  }
+
+  response.send({
+    error: null,
+    data: `/upload/${request.file.originalname}`
+  })
 });
 
 app.listen("8888", () => {
