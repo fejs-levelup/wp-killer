@@ -1,6 +1,7 @@
 doctype html
 head
   title Create User
+  meta(name="viewport" content="width=device-width, initial-scale=1")
 
   link(rel="stylesheet" href="css/main.css")
 body
@@ -19,7 +20,8 @@ body
   )
 
     .recent-post-container
-      h2 #{recentPost.title}
+      h2: a(href=`/post/${recentPost.url}`) #{recentPost.title}
+      .shorthand-container #{recentPost.shorthand}
 
   section
     h3 Top posts
@@ -28,14 +30,15 @@ body
         - var url = post.thumb || "/img/placeholder.png";
         - var shorthand = post.shorthand || "That's very interesting post. Please read it!"
         article
-          .post-thumb(
+          a.post-thumb(
             style=`background: url('${url}') center center / cover no-repeat #eee;`
+            href=`/post/${post.url}`
           )
           .post-description
             header
-              h3 #{post.title}
+              h3: a(href=`/post/${post.url}`) #{post.title}
             div !{shorthand}
-            p: a(href="post/" + post.id) Read More
+            p: a(href="/post/" + post.url) Read More
   footer
     div 2017 © It's copyright
 

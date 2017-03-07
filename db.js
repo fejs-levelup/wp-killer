@@ -17,7 +17,8 @@ const mongoose = require("mongoose"),
         cb(null, file.originalname);
       }
     }),
-    upload = multer({ storage });
+    upload = multer({ storage }),
+    speakingurl = require("speakingurl");
 
 app.set('views', './views');
 app.set("view engine", "pug");
@@ -78,6 +79,10 @@ let PostSchema = new Schema({
   },
   lastUpdate: {
     type: Number
+  },
+  url: {
+    type: String,
+    required: true
   }
 });
 
@@ -106,19 +111,44 @@ app.route("/post")
     content.createDate = Date.now();
     content.lastUpdate = Date.now();
 
-    Post.create(content, (err, data) => {
+    let slug = speakingurl.createSlug({
+      lang: "ru"
+    });
+    let url = slug(content.title);
+
+    console.log(url);
+
+    Post.find({ url }, (err, data) => {
       if(err) {
-        response.status(400).send({ error: "Unable to create new post" });
-        return;
+        console.log(err);
+        return response.status(400).send({
+          error: "Unable to save post",
+          data: null
+        });
       }
 
-      console.log(data);
+      if(data.length) return response.status(400).send({
+        error: `Post with url ${url} already exist`,
+        data: null
+      });
 
-      response.send({
-        status: "Ok",
-        data: {
-          postId: data._id
+      content.url = url;
+
+      Post.create(content, (err, data) => {
+        if(err) {
+          response.status(400).send({ error: "Unable to create new post" });
+          return;
         }
+
+        console.log(data);
+
+        response.send({
+          status: "Ok",
+          data: {
+            postId: data._id,
+            url: data.url
+          }
+        });
       });
     });
   })
@@ -149,10 +179,10 @@ app.route("/post")
     });
   });
 
-app.get("/post/:postid", (request, response) => {
+app.get("/post/:url", (request, response) => {
   console.log(request.params);
 
-  Post.findById(request.params.postid, (err, data) => {
+  Post.findOne({ url: request.params.url }, (err, data) => {
     if(err) {
       response.sendStatus(404);
       return;
