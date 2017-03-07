@@ -68,6 +68,16 @@ let PostSchema = new Schema({
   thumb: {
     type: String,
     required: true
+  },
+  shorthand: {
+    type: String,
+    required: true
+  },
+  createDate: {
+    type: Number
+  },
+  lastUpdate: {
+    type: Number
   }
 });
 
@@ -76,7 +86,7 @@ let Post = mongoose.model("Posts", PostSchema);
 
 app.get("/", (request, response) => {
 
-  Post.find({}, (err, data) => {
+  Post.find({}).sort( "-createDate" ).exec((err, data) => {
     if(err) {
       response.render({ links, posts: [] });
     }
@@ -92,6 +102,9 @@ app.route("/post")
     const content = request.body;
 
     if(!content) response.status(400).send({ error: "Aaaaaa" });
+
+    content.createDate = Date.now();
+    content.lastUpdate = Date.now();
 
     Post.create(content, (err, data) => {
       if(err) {
@@ -112,7 +125,10 @@ app.route("/post")
   .put((request, response) => {
     let postId = request.body.postId;
 
-    Post.updateOne({ _id: postId }, request.body, (err, data) => {
+    const content = request.body;
+    content.lastUpdate = Date.now();
+
+    Post.updateOne({ _id: postId }, content, (err, data) => {
       if(err) {
         console.log(err);
         return response.status(400).send();

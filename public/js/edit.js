@@ -1,6 +1,10 @@
 ;(function() {
   "use strict";
 
+  const POST_CONFIG = {
+    shorthandLength: 170
+  };
+
   const quill = new Quill('#post-editor', {
     theme: 'snow',
     modules: {
@@ -98,6 +102,15 @@
     let content = document.querySelector("#post-editor .ql-editor").innerHTML;
     let title = document.querySelector("#post-title").value.trim();
 
+    let contentLength = quill.getLength();
+    let shorthand = "";
+
+    if(contentLength > POST_CONFIG.shorthandLength) {
+      shorthand = quill.getText(0, POST_CONFIG.shorthandLength) + " [...]";
+    } else {
+      shorthand = quill.getText(0, contentLength);
+    }
+
     if(title.length < 1) return;
 
     let files = document.querySelector("#post-thumbnail").files;
@@ -109,7 +122,8 @@
           content,
           title,
           thumb: postData.thumb,
-          postId
+          postId,
+          shorthand
         }),
         headers: {
           "Content-Type": "application/json"
@@ -130,7 +144,8 @@
           content,
           title,
           thumb: data,
-          postId
+          postId,
+          shorthand
         }),
         headers: {
           "Content-Type": "application/json"

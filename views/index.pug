@@ -4,7 +4,7 @@ head
 
   link(rel="stylesheet" href="css/main.css")
 body
-  - var recentPost = posts[posts.length - 1];
+  - var recentPost = posts[0];
 
   .menu
     .nav-container
@@ -15,7 +15,7 @@ body
             li: a(href=link.path) #{link.title}
 
   header#main-header(
-    style=`background: url(${recentPost.thumb}) center center / cover no-repeat #eee;`
+    style=`background: url('${recentPost.thumb}') center center / cover no-repeat #eee;`
   )
 
     .recent-post-container
@@ -23,17 +23,19 @@ body
 
   section
     h3 Top posts
-    each post in posts
-      - var url = post.thumb || "/img/placeholder.png";
-      article
-        .post-thumb(
-          style=`background: url(${url}) center center / cover no-repeat #eee;`
-        )
-        .post-description
-          header
-            h3 #{post.title}
-          div !{post.content}
-          p: a(href="post/" + post.id) Read More
+    each post, index in posts
+      if index !== 0
+        - var url = post.thumb || "/img/placeholder.png";
+        - var shorthand = post.shorthand || "That's very interesting post. Please read it!"
+        article
+          .post-thumb(
+            style=`background: url('${url}') center center / cover no-repeat #eee;`
+          )
+          .post-description
+            header
+              h3 #{post.title}
+            div !{shorthand}
+            p: a(href="post/" + post.id) Read More
   footer
     div 2017 © It's copyright
 

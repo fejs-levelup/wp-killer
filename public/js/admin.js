@@ -1,6 +1,10 @@
 ;(function() {
   "use strict";
 
+  const POST_CONFIG = {
+    shorthandLength: 170
+  };
+
   const quill = new Quill('#post-editor', {
     theme: 'snow',
     modules: {
@@ -48,9 +52,6 @@
     fetch("/upload-image", {
       method: "POST",
       body: formData
-      // headers: {
-      //   "Content-Type": "multipart/form-data; boundary=------WebKitFormBoundaryHGACx6KaO4p7psfG;"
-      // }
     }).
     then(res => res.json()).
     then(res => {
@@ -88,6 +89,15 @@
     let content = document.querySelector("#post-editor .ql-editor").innerHTML;
     let title = document.querySelector("#post-title").value.trim();
 
+    let contentLength = quill.getLength();
+    let shorthand = "";
+
+    if(contentLength > POST_CONFIG.shorthandLength) {
+      shorthand = quill.getText(0, POST_CONFIG.shorthandLength) + " [...]";
+    } else {
+      shorthand = quill.getText(0, contentLength);
+    }
+
     if(title.length < 1) return;
 
     console.log(content);
@@ -95,7 +105,7 @@
     uploadImage().
       then(({ data }) => fetch("post", {
         method: "POST",
-        body: JSON.stringify({ content, title, thumb: data }),
+        body: JSON.stringify({ content, title, thumb: data, shorthand }),
         headers: {
           "Content-Type": "application/json"
         }
