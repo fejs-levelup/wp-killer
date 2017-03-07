@@ -27,22 +27,22 @@
   //   });
   // });
 
-  let postCollection = document.querySelectorAll("article");
+  // let postCollection = document.querySelectorAll("article");
 
-  for(let i = 0; i < postCollection.length; i++){
-    let postContent = postCollection[i].getElementsByTagName("div")[0];
-    let postPreviewPic = postContent.getElementsByTagName("img")[0];
-    console.log(postPreviewPic);
-    let div = document.createElement('div');
+  // for(let i = 0; i < postCollection.length; i++){
+  //   let postContent = postCollection[i].getElementsByTagName("div")[0];
+  //   let postPreviewPic = postContent.getElementsByTagName("img")[0];
+  //   console.log(postPreviewPic);
+  //   let div = document.createElement('div');
     
-    if(postPreviewPic){
-      div.appendChild(postPreviewPic);
-      postCollection[i].insertBefore(div, postCollection[i].firstChild);
-    }else{postCollection[i].insertBefore(div, postCollection[i].firstChild);}
+  //   if(postPreviewPic){
+  //     div.appendChild(postPreviewPic);
+  //     postCollection[i].insertBefore(div, postCollection[i].firstChild);
+  //   }else{postCollection[i].insertBefore(div, postCollection[i].firstChild);}
     
-    console.log(postCollection[i]);
+  //   console.log(postCollection[i]);
 
-  }
-  console.log(postCollection)
+  // }
+  // console.log(postCollection)
 
 })();

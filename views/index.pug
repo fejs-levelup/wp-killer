@@ -24,12 +24,16 @@ body
   section
     h3 Top posts
     each post in posts
+      - var url = post.thumb || "/img/placeholder.png";
       article
-        header
-          h3 #{post.title}
+        .post-thumb(
+          style=`background: url(${url}) center center / cover no-repeat #eee;`
+        )
+        .post-description
+          header
+            h3 #{post.title}
           div !{post.content}
-          p#firstParagraph: a(href="post/" + post.id) Read More
-          br
+          p: a(href="post/" + post.id) Read More
   footer
     div 2017 © It's copyright
 

@@ -1,0 +1,38 @@
+doctype html
+head
+  title Admin
+  link(rel="stylesheet" href="css/admin.css")
+  link(rel="stylesheet" href="//cdn.quilljs.com/1.2.0/quill.snow.css")
+  //- link(rel="stylesheet" href="//cdn.quilljs.com/1.2.0/quill.bubble.css")
+
+body
+  div
+    aside
+      nav
+        //- each link in links
+        //-   p: a(href=link.href) #{link.text}
+
+    section
+      h1 Edit
+      //- a(href="admin/new-post"): button Create a new post
+
+      input#post-title(type="text"
+        name="post-title"
+        placeholder="Post title"
+        value=post.title
+      )
+      div#post-editor(data-post-id=post._id)
+      div.upload-preview.hello
+        form#post-preview(action="/upload-thumb")
+          label(for="post-thumbnail") Upload image
+          input#post-thumbnail(
+            type="file"
+            name="post-thumbnail"
+          )
+      img#thumb(src=post.thumb)
+      button#save-post Edit post
+      button#delete-post Delete post
+
+  //- script(src="//cdn.quilljs.com/1.2.0/quill.js")
+  script(src="//cdn.quilljs.com/1.2.0/quill.min.js")
+  script(src="/js/edit.js")

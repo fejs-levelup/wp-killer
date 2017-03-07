@@ -87,27 +87,51 @@ app.get("/", (request, response) => {
   });
 });
 
-app.post("/post", (request, response) => {
-  const content = request.body;
+app.route("/post")
+  .post((request, response) => {
+    const content = request.body;
 
-  if(!content) response.status(400).send({ error: "Aaaaaa" });
+    if(!content) response.status(400).send({ error: "Aaaaaa" });
 
-  Post.create(content, (err, data) => {
-    if(err) {
-      response.status(400).send({ error: "Unable to create new post" });
-      return;
-    }
-
-    console.log(data);
-
-    response.send({
-      status: "Ok",
-      data: {
-        postId: data._id
+    Post.create(content, (err, data) => {
+      if(err) {
+        response.status(400).send({ error: "Unable to create new post" });
+        return;
       }
+
+      console.log(data);
+
+      response.send({
+        status: "Ok",
+        data: {
+          postId: data._id
+        }
+      });
+    });
+  })
+  .put((request, response) => {
+    let postId = request.body.postId;
+
+    Post.updateOne({ _id: postId }, request.body, (err, data) => {
+      if(err) {
+        console.log(err);
+        return response.status(400).send();
+      }
+      response.send({ data });
+    });
+  }).
+  delete((request, response) => {
+    let postId = request.body.postId;
+
+    Post.remove({ _id: postId }, (err, data) => {
+      if(err) {
+        console.log(err);
+        return response.status(400).send();
+      }
+
+      response.send({ data: "ok" });
     });
   });
-});
 
 app.get("/post/:postid", (request, response) => {
   console.log(request.params);
@@ -215,6 +239,30 @@ app.post("/upload-thumb", upload.single("post-thumbnail"), (request, response) =
   response.send({
     error: null,
     data: `/upload/thumbs/${request.file.originalname}`
+  });
+});
+
+app.get("/edit/:id", (request, response) => {
+  Post.findById(request.params.id, (err, data) => {
+    if(err) {
+      console.log(err);
+      response.status(404).send();
+      return;
+    }
+
+    response.render("edit", { post: data });
+  });
+});
+
+app.get("/post-content/:id", (request, response) => {
+  Post.findById(request.params.id, (err, data) => {
+    if(err) {
+      console.log(err);
+      response.status(404).send();
+      return;
+    }
+
+    response.send({ data });
   });
 });
 
