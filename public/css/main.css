@@ -154,6 +154,8 @@ h3 {
 h3 a {
   text-decoration: none;
   cursor: pointer;
+  color: #333;
+  font-weight: bold;
 }
 
 h3 a:hover,

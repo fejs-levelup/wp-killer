@@ -18,12 +18,25 @@ const mongoose = require("mongoose"),
       }
     }),
     upload = multer({ storage }),
-    speakingurl = require("speakingurl");
+    speakingurl = require("speakingurl"),
+    passport = require("passport"),
+    LocalStrategy = require("passport-local").Strategy,
+    cookieParser = require("cookie-parser");
 
 app.set('views', './views');
 app.set("view engine", "pug");
 app.use(express.static('./public'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+app.use(cookieParser());
+
+app.use(require('express-session')({ secret: 'keyboard cat' }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 mongoose.connect(url);
 
@@ -47,11 +60,15 @@ let UserSchema = new Schema({
     type: Number,
     required: true
   },
-  gender: {
+  // role: {
+  //   type: String,
+  //   required: true
+  // },
+  username: {
     type: String,
     required: true
   },
-  role: {
+  password: {
     type: String,
     required: true
   }
@@ -89,11 +106,60 @@ let PostSchema = new Schema({
 let User = mongoose.model("Users", UserSchema);
 let Post = mongoose.model("Posts", PostSchema);
 
+
+
+// PASSPORT 
+
+
+passport.serializeUser(function(user, done) {
+  console.log("SERIALIZE: ", user.username);
+  done(null, user.username);
+});
+
+passport.deserializeUser(function(username, done) {
+  User.findOne({ username }, function(err, user) {
+    console.log("DESERIALIZE", err, user);
+    done(err, user);
+  });
+});
+
+passport.use(new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password'
+  },
+  function(username, password, done) {
+    User.findOne({ username: username }, function(err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.password === password) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
+
+ // PASSPORT
+
+ app.route("/login")
+  .get((request, response) => {
+    response.render("login");
+  })
+  .post(passport.authenticate('local', {
+    successRedirect: '/admin',
+    failureRedirect: '/login'
+  })
+ );
+
+
 app.get("/", (request, response) => {
 
   Post.find({}).sort( "-createDate" ).exec((err, data) => {
     if(err) {
-      response.render({ links, posts: [] });
+      response.render("index", { links, posts: [] });
     }
 
     let posts = data;
@@ -105,6 +171,8 @@ app.get("/", (request, response) => {
 app.route("/post")
   .post((request, response) => {
     const content = request.body;
+
+    console.log("USER: ", request.user);
 
     if(!content) response.status(400).send({ error: "Aaaaaa" });
 
@@ -194,9 +262,9 @@ app.get("/post/:url", (request, response) => {
   });
 });
 
-app.get("/login", (request, response) => {
-  response.render("login");
-});
+// app.get("/login", (request, response) => {
+//   response.render("login");
+// });
 
 app.get("/admin", (request, response) => {
   let links = [

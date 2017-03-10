@@ -7,6 +7,24 @@ body
       each link in links
         li: a(href=link.path) #{link.title}
 
+  form#create-user(
+    action="/user"
+    method="POST"
+  )
+    label Name:
+      input#name(type="text" name="name" required)
+    br
+    label Age:
+      input#age(type="number" name="age" required)
+    br
+    label Username:
+      input#username(type="text" name="username" required)
+    br
+    label Password:
+      input#password(type="password" name="password" required)
+    br
+    button Create user
+
   each user in users
     div.user(
       style="margin: 10px; padding: 10px; border: 1px solid #ddd"
