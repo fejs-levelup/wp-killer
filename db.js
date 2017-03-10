@@ -118,7 +118,6 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(username, done) {
   User.findOne({ username }, function(err, user) {
-    console.log("DESERIALIZE", err, user);
     done(err, user);
   });
 });
@@ -141,6 +140,8 @@ passport.use(new LocalStrategy({
   }
 ));
 
+const users = [];
+
 
  // PASSPORT
 
@@ -148,14 +149,36 @@ passport.use(new LocalStrategy({
   .get((request, response) => {
     response.render("login");
   })
-  .post(passport.authenticate('local', {
-    successRedirect: '/admin',
-    failureRedirect: '/login'
-  })
- );
+  .post(passport.authenticate('local'), (request, response) => {
+    if(!request.user) {
+      return response.redirect("/login");
+    }
+
+    let user = {};
+
+    user.username = request.user.username;
+    user.timerId = setTimeout((user) => {
+      user.status = "loggedout";
+    }, 10000, user);
+
+    users.push(user);
+
+
+    return response.redirect("/admin");
+  });
 
 
 app.get("/", (request, response) => {
+
+  if(request.user) {
+    let user = users.find(user => user.username === request.user.username);
+    // if(user) console.log(user, "Is logged out", user.status === "loggedout");
+    console.log(users[0], request.user, user);
+    if(user && user.status === "loggedout") {
+      request.logout();
+      console.log("?????");
+    }
+  }
 
   Post.find({}).sort( "-createDate" ).exec((err, data) => {
     if(err) {
@@ -267,6 +290,11 @@ app.get("/post/:url", (request, response) => {
 // });
 
 app.get("/admin", (request, response) => {
+
+  if(!request.user) {
+    return response.redirect("/");
+  }
+
   let links = [
     { href: "/", text: "Main" }
   ];
